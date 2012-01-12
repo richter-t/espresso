@@ -22,6 +22,7 @@ ext_modules=[
     Extension("integrate", ["integrate.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
     Extension("changeVolume", ["changeVolume.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
     Extension("invalidateSystem", ["invalidateSystem.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
+    Extension("random", ["random.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
 ]
 
 setup(
