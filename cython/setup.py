@@ -23,12 +23,13 @@ ext_modules=[
     Extension("changeVolume", ["changeVolume.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
     Extension("invalidateSystem", ["invalidateSystem.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
     Extension("random", ["random.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
+	Extension("code_info", ["code_info.pyx"], libraries=['espresso_main', 'tcl8.5', 'mpi'], **ext_params),
 ]
 
 setup(
 #  name = 'BLAS and LAPACK wrapper',
-  name = 'espresso',
-  cmdclass = {'build_ext': build_ext},
-  ext_modules = ext_modules,
+    name = 'espresso',
+    cmdclass = {'build_ext': build_ext},
+    ext_modules = ext_modules,
 )
 
