@@ -160,12 +160,6 @@ void calc_3d_grid(int n, int grid[3]);
 */ 
 int map_3don2d_grid(int g3d[3],int g2d[3], int mult[3]);
 
-/** datafield callback for \ref node_grid. */
-int tclcallback_node_grid(Tcl_Interp *interp, void *data);
-
-/** datafield callback for \ref box_l. Sets the box dimensions. */
-int tclcallback_box_l(Tcl_Interp *interp, void *_data);
-
 /** rescales the box in dimension 'dir' to the new value 'd_new', and rescales the particles accordingly */
 void rescale_boxl(int dir, double d_new);
 
