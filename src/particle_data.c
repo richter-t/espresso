@@ -1498,6 +1498,19 @@ void auto_exclusion(int distance)
 
 #ifdef GRANDCANONICAL 
 
+TypeOfIndex Type; 
+
+IndexOfType Index; 
+
+TypeList *type_array;
+int number_of_type_lists;
+
+// flag indicating init_gc was called 
+int GC_init;
+
+// flag that indicates that the function init_type_array was called already
+int Type_array_init;
+
 int init_gc(void){
 	if ( type_array == (TypeList *) NULL) {
 	//stores the number of currently available type_list's 
@@ -1891,6 +1904,5 @@ int number_of_particles_with_type(int type, int *number){
 //	list=root;
 //	return ES_OK
 //}
-
 
 #endif

@@ -733,11 +733,11 @@ typedef struct {
 	int * index;
 } TypeOfIndex;
 
-TypeOfIndex Type; 
+extern TypeOfIndex Type; 
 //index.max_entry=0;
 //index->type = (int *) 0;
 
-IndexOfType Index; 
+extern IndexOfType Index; 
 //tindex.max_entry=0;
 //tindex->type = (int *) 0;
 
@@ -749,14 +749,14 @@ typedef struct {
 } TypeList;
 
 //undefined array size
-TypeList *type_array;
-int number_of_type_lists;
+extern TypeList *type_array;
+extern int number_of_type_lists;
 
 // flag indicating init_gc was called 
-int GC_init;
+extern int GC_init;
 
 // flag that indicates that the function init_type_array was called already
-int Type_array_init;
+extern int Type_array_init;
 
 /** linked list for particles of a given type */
 //typedef struct {
