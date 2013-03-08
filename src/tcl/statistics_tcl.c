@@ -478,7 +478,7 @@ static int tclcommand_analyze_parse_radial_density_map(Tcl_Interp *interp, int a
 
   /* allocate memory for the profile if necessary */
   if (thetabins > 0 ) {
-    density_profile = (DoubleList *) malloc(beadtypes.max*sizeof(DoubleList));
+    density_profile = (DoubleList*) malloc(beadtypes.max*sizeof(DoubleList));
     if (density_profile) {
       for ( i = 0 ; i < beadtypes.max ; i++ ) {
 	init_doublelist(&density_profile[i]);
@@ -715,7 +715,7 @@ static int tclcommand_analyze_parse_lipid_orient_order(Tcl_Interp *interp, int a
     return (TCL_OK);
   }
 
-  stored_dirs = (double *) malloc(sizeof(double)*n_molecules*3);
+  stored_dirs = (double*) malloc(sizeof(double)*n_molecules*3);
   /* Do the calculation */
   if ( orient_order(&result,stored_dirs) != TCL_OK ) {
     Tcl_AppendResult(interp, "Error calculating orientational order ", (char *)NULL);
