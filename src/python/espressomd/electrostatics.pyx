@@ -26,7 +26,6 @@ cdef class ElectrostaticInteraction(actors.Actor):
         raise Exception(
             "Subclasses of ElectrostaticInteraction must define the _tune() method or chosen method does not support tuning.")
 
-
 IF COULOMB_DEBYE_HUECKEL:
     cdef class CDH(ElectrostaticInteraction):
         def validate_params(self):
@@ -385,3 +384,86 @@ IF ELECTROSTATICS and CUDA and EWALD_GPU:
                 self._params["isTuned"] = True
 
             self._set_params_in_es_core()
+
+
+IF ELECTROSTATICS:
+    cdef class MMM2D(ElectrostaticInteraction):
+        def validate_params(self):
+            default_params = self.default_params()
+            if self._params["bjerrum_length"] < 0 :
+                raise ValueError("Bjerrum_length should be a positive double")
+            if self._params["maxPWerror"] < 0 and self._params["maxPWerror"] != default_params["maxPWerror"]:
+                raise ValueError("maxPWerror should be a positive double")
+            if self._params["dielectric"] == 1 and ( self._params["top"] < 0 or self._params["mid"] < 0 or self._params["bot"] < 0 ):
+                raise ValueError("Dielectric constants should be > 0!")
+            if self._params["dielectric_contrast_on"] == 1 and (self._params["delta_top"] == default_params["delta_top"] or self._params["delta_bot"] == default_params["delta_bot"] ):
+                raise ValueError("Dielectric constrast not set!")
+            if self._params["const_pot_on"] == 1 and self._params["pot_diff"] == default_params["pot_diff"]:
+                raise ValueError("Potential difference not set!")
+            if self._params["dielectric"] == 1 and self._params["dielectric_contrast_on"]==1 :
+                raise ValueError("dielectric and dielectric_contrast are mutually exclusive!")
+            if self._params["dielectric"] == 1 and self._params["const_pot_on"] ==1:
+                raise ValueError("dielectric and constant potential are mutually exclusive")
+            if self._params["dielectric_contrast_on"] == 1 and self._params["const_pot_on"] == 1:
+                raise ValueError("dielectric contrast and constant potential are mutually exclusive")
+            if self._params["far_cut"] != default_params["far_cut"] and self._params["far_cut"] < 0:
+                raise ValueError("Far cut off value should be >0 ")
+
+
+
+
+        def default_params(self):
+            return { "bjerrum_length": -1, 
+                     "maxPWerror": -1, 
+                     "far_cut" : -1, 
+                     "top" : 0,
+                     "mid" : 0,
+                     "bot" : 0,
+                     "far_calculated" : 0,
+                     "dielectric" : 0,
+                     "dielectric_contrast_on": 0,
+                     "const_pot_on": 0,
+                     "delta_mid_top": 0,
+                     "delta_mid_bot": 0,
+                     "pot_diff" : 0 }
+
+        def required_keys(self):
+            return ["bjerrum_length", "maxPWerror"]
+
+        def valid_keys(self):
+            return "bjerrum_length", "maxPWerror", "top", "mid", "bot", "delta_mid_top", "delta_mid_bot", "pot_diff", "dielectric", "dielectric_contrast_on", "const_pot_on", "far_cut"
+
+        def _getParamsFromEsCore(self):
+            params={}
+            params.update(mmm2d_params)
+            params["bjerrum_length"] = coulomb.bjerrum
+            # this value does only live in cython
+            params["dielectric"] = self._params["dielectric"]
+            print params
+            return params
+        
+        def _setParamsInEsCore(self):
+            def_params=self.default_params()
+            if self._params["far_cut"] != def_params["far_cut"]:
+                self._params["far_calculated"] = 1
+                mmm2d_params.far_calculated=1
+                mmm2d_params.far_cut=self._params["far_cut"]
+            coulomb_set_bjerrum(self._params["bjerrum_length"])
+            if self._params["dielectric"] == 1:
+                self._params["delta_mid_top"] = (self._params["mid"] - self._params["top"]) / ( self._params["mid"] + self._params["top"])
+                self._params["delta_mid_bot"] = (self._params["mid"] - self._params["bot"]) / ( self._params["mid"] + self._params["bot"])
+            if self._params["dielectric_contrast_on"] == 1:
+                mmm2d_params.dielectric_contrast_on = 1
+            if self._params["const_pot_on"] == 1:
+                mmm2d_params.const_pot_on = 1
+            print MMM2D_set_params(self._params["maxPWerror"], self._params["far_cut"], self._params["delta_mid_top"], self._params["delta_mid_bot"], self._params["const_pot_on"], self._params["pot_diff"])
+            params={}
+            params = self._getParamsFromEsCore()
+            print params
+
+        def _activate_method(self):
+            coulomb.method = COULOMB_MMM2D
+            self._setParamsInEsCore()
+            MMM2D_init()
+            print MMM2D_sanity_checks()
+

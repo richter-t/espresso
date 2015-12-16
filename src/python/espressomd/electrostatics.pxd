@@ -22,6 +22,8 @@ include "myconfig.pxi"
 from _system cimport *
 cimport numpy as np
 from utils cimport *
+cimport mmm2d
+import mmm2d
 
 IF ELECTROSTATICS:
     IF P3M:
@@ -207,6 +209,30 @@ IF ELECTROSTATICS and CUDA and EWALD_GPU:
             int time_calc_steps  # Steps in time_force_calc function
 
         cdef extern Ewaldgpu_params ewaldgpu_params
+
+################################
+# MMM2D
+################################
+IF ELECTROSTATICS:
+    cdef extern from "mmm2d.hpp":
+        ctypedef struct MMM2D_struct:
+            double maxPWerror;
+            double far_cut;
+            int dielectric_contrast_on;
+            int const_pot_on;
+            int far_calculated
+            double pot_diff;
+            double delta_mid_top;
+            double delta_mid_bot;
+
+        cdef extern MMM2D_struct mmm2d_params;
+
+        int MMM2D_set_params(double maxPWerror, double far_cut, double delta_top, double delta_bot, int const_pot_on, double pot_diff);
+
+        void MMM2D_init();
+
+        int MMM2D_sanity_checks();
+
 
         # ctypedef extern class EwaldgpuForce ewaldgpuForce
 #    cdef extern from "EspressoSystemInterface.cpp":

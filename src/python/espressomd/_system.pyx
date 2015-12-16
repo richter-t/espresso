@@ -221,10 +221,11 @@ cdef class System:
                 raise ValueError(
                     "periodicity must be of length 3, got length " + str(len(_periodic)))
             periodicity = np.zeros(3)
-            for i in range(3):
-                if _periodic[i] != 1:
-                    raise ValueError(
-                        "Until we can handle conditional compilation, only periodicity [1,1,1] is supported in python interface")
+            IF not PARTIAL_PERIODIC:
+                for i in range(3):
+                    if _periodic[i] != 1:
+                        raise ValueError(
+                            "PARTIAL_PERIODIC not defined")
             for i in range(3):
                 periodicity[i] = _periodic[i]
             periodic = 4 * _periodic[2] + 2 * _periodic[1] + _periodic[0]

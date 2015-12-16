@@ -51,6 +51,7 @@ cdef class CellSystem(object):
     def set_layered(self, n_layers=""):
         """set_layered(nLayers="")
         Set the layerd cell system with nLayers layers"""
+        determine_n_layers = 1
         if n_layers != "":
             if not isinstance(n_layers, int):
                 raise ValueError("layer height should be positive")
@@ -58,10 +59,10 @@ cdef class CellSystem(object):
             if not n_layers > 0:
                 raise ValueError("the number of layers has to be >0")
 
-            global n_layers
             n_layers = int(n_layers)
-            global determine_n_layers
             determine_n_layers = 0
+
+        print "here"
 
         if (node_grid[0] != 1 or node_grid[1] != 1):
             node_grid[0] = node_grid[1] = 1
@@ -70,14 +71,18 @@ cdef class CellSystem(object):
         else:
             mpi_err = 0
 
+        print "here2"
         if not mpi_err:
             mpi_bcast_cell_structure(CELL_STRUCTURE_LAYERED)
 
+        print "after mpiBast"
         # @TODO: gathering should be interface independent
         # return mpi_gather_runtime_errors(interp, TCL_OK)
 
         if mpi_err:
             raise Exception("Broadcasting the node grid failed")
+
+        print "before exit"
         return True
 
     def get_state(self):
