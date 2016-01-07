@@ -457,9 +457,6 @@ IF ELECTROSTATICS:
             if self._params["const_pot_on"] == 1:
                 mmm2d_params.const_pot_on = 1
             print MMM2D_set_params(self._params["maxPWerror"], self._params["far_cut"], self._params["delta_mid_top"], self._params["delta_mid_bot"], self._params["const_pot_on"], self._params["pot_diff"])
-            params={}
-            params = self._getParamsFromEsCore()
-            print params
 
         def _activate_method(self):
             coulomb.method = COULOMB_MMM2D
